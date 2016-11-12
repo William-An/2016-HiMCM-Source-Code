@@ -3,7 +3,7 @@ from threading import *
 import bs4
 import requests
 import csv
-
+screenlock=Semaphore(value=1)
 database=open("free-zipcode-database-Primary.csv")
 mapRequestUrl="https://www.ups.com/maps/"
 reader=csv.DictReader(database)
@@ -11,7 +11,9 @@ imgdict=dict()
 maplist=set()
 def grabber(Database,url,place):
     if place['State'] == "PR":
-        print("[-] Location Not in list")
+        screenlock.acquire()
+        print("[-] "+i["Zipcode"]+" Not in list")
+        screenlock.release()
         return
     else:
         parameters={"zip":place['Zipcode']}
@@ -22,16 +24,19 @@ def grabber(Database,url,place):
         if imguri in maplist:
             return
         else:
+
             maplist.add(imguri)
-        imgdir="./map/"+place["State"]+place["Zipcode"]+".gif"
-        urlretrieve(imguri,imgdir)
-        print("[+] Download successfully on Map "+place["Zipcode"])
+            imgdir="./map/"+place["State"]+place["Zipcode"]+".gif"
+            urlretrieve(imguri,imgdir)
+            screenlock.acquire()
+            print("[+] Download successfully on Map "+place["Zipcode"])
+            screenlock.release()
 
 for i in reader:
     #print(i['Zipcode'])
-    #grab=Thread(target=grabber,args=(database,mapRequestUrl,i))
-    #grab.start()
-    grabber(database,mapRequestUrl,i)
+    grab=Thread(target=grabber,args=(database,mapRequestUrl,i))
+    grab.start()
+    #grabber(database,mapRequestUrl,i)
 
 
 
