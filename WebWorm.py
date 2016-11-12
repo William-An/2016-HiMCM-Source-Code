@@ -30,7 +30,7 @@ def grabber(Database,url,place):
             imguri="https://www.ups.com"+imgPage
             if imguri in maplist:
                 screenlock.acquire()
-                print("[+] Already found the map correspond to this zipcode")
+                print("[+] Already found the map correspond to this zipcode "+place["Zipcode"])
                 screenlock.release()
                 return
             else:
