@@ -4,7 +4,6 @@ import bs4
 import requests
 import csv
 import os
-import ssl
 screenlock=Semaphore(value=1)
 database=open("free-zipcode-database-Primary.csv")
 mapRequestUrl="https://www.ups.com/maps/"
@@ -30,7 +29,7 @@ def grabber(Database,url,place):
             imguri="https://www.ups.com"+imgPage
             if imguri in maplist:
                 screenlock.acquire()
-                print("[+] Already found the map correspond to this zipcode "+place["Zipcode"])
+                print("[+] Already found the map corresponds to this zipcode "+place["Zipcode"])
                 screenlock.release()
                 return
             else:
@@ -44,7 +43,7 @@ def grabber(Database,url,place):
         #except (TimeoutError,TypeError,ssl.SSLEOFError) as err:
         except:
             screenlock.acquire()
-            print("[-] Zipcode "+place["Zipcode"]+" area cannot use as warehouse.")# Err code")#+str(err))
+            print("[-] Zipcode "+place["Zipcode"]+" area cannot use as a warehouse.")# Err code")#+str(err))
             screenlock.release()
             return
 for i in reader:
