@@ -13,7 +13,7 @@ maplist=set()
 def grabber(Database,url,place):
     if os.path.exists("./map/"+place["State"]+place["Zipcode"]+".gif"):
         screenlock.acquire()
-        print("[+] Already have the map correspond to this zipcode")
+        print("[+] Already have the map correspond to this zipcode "+place["Zipcode"])
         screenlock.release()
     if place['State'] == "PR" or place["State"] == "HI":
         screenlock.acquire()
