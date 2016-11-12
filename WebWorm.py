@@ -3,6 +3,8 @@ from threading import *
 import bs4
 import requests
 import csv
+import os
+import ssl
 screenlock=Semaphore(value=1)
 database=open("free-zipcode-database-Primary.csv")
 mapRequestUrl="https://www.ups.com/maps/"
@@ -10,7 +12,11 @@ reader=csv.DictReader(database)
 imgdict=dict()
 maplist=set()
 def grabber(Database,url,place):
-    if place['State'] == "PR" or "HI":
+    if os.path.exists("./map/"+place["State"]+place["Zipcode"]+".gif"):
+        screenlock.acquire()
+        print("[+] Already have the map correspond to this zipcode")
+        screenlock.release()
+    if place['State'] == "PR" or place["State"] == "HI":
         screenlock.acquire()
         print("[-] "+i["Zipcode"]+" Not in list")
         screenlock.release()
@@ -23,6 +29,9 @@ def grabber(Database,url,place):
             imgPage=map.find("img",id="imgMap")["src"]
             imguri="https://www.ups.com"+imgPage
             if imguri in maplist:
+                screenlock.acquire()
+                print("[+] Already found the map correspond to this zipcode")
+                screenlock.release()
                 return
             else:
 
@@ -32,15 +41,20 @@ def grabber(Database,url,place):
                 screenlock.acquire()
                 print("[+] Download successfully on Map "+place["Zipcode"])
                 screenlock.release()
-        except TimeoutError or TypeError as err:
+        #except (TimeoutError,TypeError,ssl.SSLEOFError) as err:
+        except:
             screenlock.acquire()
-            print("[-] Zipcode "+place["Zipcoe"]+" area cannot use as warehouse. Err code"+str(err))
+            print("[-] Zipcode "+place["Zipcode"]+" area cannot use as warehouse.")# Err code")#+str(err))
             screenlock.release()
+            return
 for i in reader:
     #print(i['Zipcode'])
     grab=Thread(target=grabber,args=(database,mapRequestUrl,i))
     grab.start()
     #grabber(database,mapRequestUrl,i)
+print("[+] Finished Grabbing")
+with open("location","w") as warehouseLocation:
+    warehouseLocation.writelines(maplist)
 
 
 
