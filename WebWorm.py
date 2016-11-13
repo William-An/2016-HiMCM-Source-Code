@@ -6,26 +6,18 @@ import csv
 import os
 screenlock=Semaphore(value=1)
 database=open("free-zipcode-database-Primary.csv")
-grabbedMapFile=open("grabbedMap","a+")
 mapRequestUrl="https://www.ups.com/maps/"
 reader=csv.DictReader(database)
 imgdict=dict()
 maplist=set()
-grabbedMap=grabbedMapFile.readlines()
 def grabber(Database,url,place):
-    if place["Zipcode"] in grabbedMap:
-        screenlock.acquire()
-        print("[+] Already have the map correspond to this zipcode "+place["Zipcode"])
-        screenlock.release()
     if os.path.exists("./map/"+place["State"]+place["Zipcode"]+".gif"):
         screenlock.acquire()
         print("[+] Already have the map correspond to this zipcode "+place["Zipcode"])
-        grabbedMapFile.write(place["Zipcode"]+"\n")
         screenlock.release()
     if place['State'] == "PR" or place["State"] == "HI":
         screenlock.acquire()
         print("[-] "+i["Zipcode"]+" Not in list")
-        grabbedMapFile.write(place["Zipcode"]+"\n")
         screenlock.release()
         return
     else:
@@ -38,7 +30,6 @@ def grabber(Database,url,place):
             if imguri in maplist:
                 screenlock.acquire()
                 print("[+] Already found the map corresponds to this zipcode "+place["Zipcode"])
-                grabbedMapFile.write(place["Zipcode"]+"\n")
                 screenlock.release()
                 return
             else:
@@ -48,7 +39,6 @@ def grabber(Database,url,place):
                 urlretrieve(imguri,imgdir)
                 screenlock.acquire()
                 print("[+] Download successfully on Map "+place["Zipcode"])
-                grabbedMapFile.write(place["Zipcode"]+"\n")
                 screenlock.release()
         #except (TimeoutError,TypeError,ssl.SSLEOFError) as err:
         except:
@@ -61,9 +51,10 @@ for i in reader:
     #i={"Zipcode":"02114","State":"NY"}
     grab=Thread(target=grabber,args=(database,mapRequestUrl,i))
     grab.start()
-    i=input()
+    #i=input()
     #grabber(database,mapRequestUrl,i)
 print("[+] Finished Grabbing")
+database.close()
 with open("location","w") as warehouseLocation:
     warehouseLocation.writelines(maplist)
 
