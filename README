@@ -1,4 +1,3 @@
 This git repository contains the source code of Team 6633 for solving the 2016 HiMCM problem.
 The WebWorm.py file is used to grab information from the UPS official site.
-The free-zipcode-database.csv and free-zipcode-database-Primary.csv are the databases we used in our model, which comes from http://federalgovernmentzipcodes.us/, Free Zipcode Database | Free Zip Code Database
-The map file contains the delivery maps we got from UPS.
+
