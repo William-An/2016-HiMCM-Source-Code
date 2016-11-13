@@ -55,7 +55,9 @@ for i in reader:
 print("[+] Finished Grabbing")
 database.close()
 with open("location","w") as warehouseLocation:
-    warehouseLocation.writelines(maplist)                                                       #Store the uri of the maps we grab
+    for i in maplist:
+        warehouseLocation.write(i+"\n")               #Store the uri of the maps we grab
+
 
 
 
