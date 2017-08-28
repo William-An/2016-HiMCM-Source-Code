@@ -1,4 +1,5 @@
 #This python file uses Greedy Algorithm to find the partial best-fit solution hoping to get the best-fit solution for entire problem
+from __future__ import division
 from Image2FilteredMat import *
 import cv2
 import numpy as np
@@ -13,20 +14,23 @@ def cover(Kbest,Pbest): #Find partial best-fit solution based on the overlapping
     temp=np.copy(zero)
     cover=-10
     #consider cover
+    valid_range = np.logical_not(zero[:,:] < 1)
     for i in Pbest:
         try:
+            imgMatDict[i][valid_range] = 1
             new=np.add(temp,imgMatDict[i])
         except KeyError:
             continue
         test=np.copy(new)
-        valid_range = np.logical_not(zero[:,:] < 1)
         new[valid_range]=1
+        # print(np.sum(test)/np.sum(new))
         if (np.sum(test)/np.sum(new)) < A and np.sum(new)>cover:
             A=np.sum(test)/np.sum(new)
             cover=np.sum(new)
             bestmat=i
-
-    else:   return bestmat# ,np.sum(zero)
+        else:
+            continue
+    return bestmat# ,np.sum(zero)
 
 for i in image_files:
     imgMat=jpginRange(i,colorup,colordown,kernel)
@@ -48,18 +52,19 @@ r.reverse()
 #greedy
 for j in range(1,485):
 
-    mat=cover(best,r)
+    mat = cover(best,r) # Alawys 0?
         #q=max(q,r[i]+r[j-i])
     if mat!=0:
         best.append(mat)
         r.pop(r.index(mat))
 print best
+print len(best)
 zero=np.zeros((imgMatDict.get(best[1]).shape[0],imgMatDict.get(best[1]).shape[1]),dtype=imgMatDict.get(best[1]).dtype)
 for i in best:
     if i==0:continue
     im=imgMatDict.get(i)
     #cv2.imshow("sad",im)
-    #print np.sum(im)
+    # print np.sum(im)
     valid_range = np.logical_not(im[:, :] == 1)
     im[valid_range]=0
     im[np.logical_not(valid_range)]=255

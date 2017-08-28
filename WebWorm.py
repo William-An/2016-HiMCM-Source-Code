@@ -46,7 +46,7 @@ def grabber(Database,url,place):
             screenlock.release()
             return
 for i in reader:
-    #print(i['Zipcode'])
+    print(i['Zipcode'])
     #i={"Zipcode":"02114","State":"NY"}
     grab=Thread(target=grabber,args=(database,mapRequestUrl,i))                                 #Using Thread in threading module to improve performance and speed
     grab.start()
